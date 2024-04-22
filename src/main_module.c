@@ -61,6 +61,7 @@ void *module_main(void *saved_state) {
   if (!state->renderer)
     goto CLEANUP;
 
+  state->reload = false;
   state->quit = false;
   SDL_Event event = event;
   while (!state->quit) {
