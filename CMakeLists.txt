@@ -1,28 +1,49 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(sdl2-hotreload)
-set(HOST_SOURCES "src/main_host.c")
-set(MODULE_SOURCES "src/main_module.c")
+project(
+  wengine
+  VERSION 1.0.0
+  DESCRIPTION "engine in SDL")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(GLEW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/GLEW)
 
-set(CUTILS_LIB_DIR "/usr/local/lib/libc-utils.dylib")
-set(CUTILS_INC_DIR "/usr/local/include/")
+set(HOST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/host/main_host.c
+                 ${CMAKE_CURRENT_SOURCE_DIR}/src/logger.c)
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
+set(MODULE_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/game.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/logger.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/g_defs.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/player.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/render.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/update.c)
 
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS}
-                    ${CUTILS_INC_DIR} include)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
+# compile SDL
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL2)
+# compile SDL_image
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL_image)
+# compile GLEW
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/GLEW/build/cmake)
+
+find_package(OpenGL REQUIRED)
+
+# global include
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# module
 add_library(${PROJECT_NAME}-module SHARED ${MODULE_SOURCES})
+set_target_properties(
+  ${PROJECT_NAME}-module PROPERTIES VERSION ${PROJECT_VERSION}
+                                    DESCRIPTION ${PROJECT_DESCRIPTION})
 
-target_link_libraries(
-  ${PROJECT_NAME}-module PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES}
-                                 ${CUTILS_LIB_DIR})
+target_link_libraries(${PROJECT_NAME}-module PRIVATE SDL2 SDL2_image glew)
 
-add_executable(${PROJECT_NAME}-host ${HOST_SOURCES})
-
-target_link_libraries(${PROJECT_NAME}-host PRIVATE ${CUTILS_LIB_DIR})
+# host
+add_executable(${PROJECT_NAME} ${HOST_SOURCES})
+set_target_properties(
+  ${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} DESCRIPTION
+                                                        ${PROJECT_DESCRIPTION})
 
 add_compile_options(-Wall -Wextra)
