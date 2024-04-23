@@ -1,21 +1,23 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "utils/logger.h"
 #include <dlfcn.h>
-#include <utils.h>
 
 int main(void) {
   logger_init(DEBUG, NULL);
+  LOG("HOST STARTED");
   void *state = NULL;
 
   int cycle = 0;
   while (true && cycle <= 10) {
-    void *module = dlopen("./libsdl2-hotreload-module.dylib", RTLD_NOW);
+    void *module = dlopen("./libwengine-module.dylib", RTLD_NOW);
     if (module == NULL) {
-      ERR("Failed to load library: (%s)", dlerror());
+      ERR("FAILED TO LOAD WENGINE LIB: (%s)", dlerror());
       cycle++;
       continue;
     } else {
+      LOG("WENGINE LIB LOADED");
       cycle = 0;
     }
     typedef void *module_main_func(void *state);
@@ -23,8 +25,11 @@ int main(void) {
     state = module_main(state);
 
     dlclose(module);
-    if (state == NULL)
+    LOG("WENGINE LIB CLOSED");
+    if (state == NULL) {
+      LOG("HOST CLOSING");
       return 0;
+    }
   }
   ERR("couldn't load library in %d tries! exiting.", cycle);
   return 0;
