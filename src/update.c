@@ -2,15 +2,15 @@
 #include "update.h"
 
 void handle_event(global *g) {
-  while (SDL_PollEvent(&g->event)) {
-    switch (g->event.type) {
+  while (SDL_PollEvent(&g->sdl.event)) {
+    switch (g->sdl.event.type) {
     case SDL_QUIT:
-      g->quit = true;
+      g->game.quit = true;
     case SDL_KEYDOWN:
-      switch (g->event.key.keysym.scancode) {
+      switch (g->sdl.event.key.keysym.scancode) {
       case SDL_SCANCODE_F5:
-        g->quit = true;
-        g->reload = true;
+        g->game.quit = true;
+        g->game.reload = true;
       default:
         break;
       }

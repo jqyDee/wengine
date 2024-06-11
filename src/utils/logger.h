@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_BUF 1024
+#define MAX_BUF 2048
 
 #define ASSERT(_e, ...)                                                        \
   if (!(_e)) {                                                                 \

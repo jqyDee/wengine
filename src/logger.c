@@ -47,15 +47,10 @@ static void add_info_to_string(char *string, LOG_LEVEL log_level,
 
 static void add_frmt_to_string(char *string, const char *fmt, va_list fargv) {
   // add fmt
-  size_t size = snprintf(NULL, 0, fmt, fargv);
+  size_t size = vsnprintf(NULL, 0, fmt, fargv);
   char src[size + 1];
   vsnprintf(src, size + 1, fmt, fargv);
   strcat(string, src);
-
-  // add newline to end
-  if (string[strlen(string) - 1] != '\n') {
-    strcat(string, "\n");
-  }
 }
 
 void logger_log(LOG_LEVEL log_level, const char *log_fname, const size_t line,

@@ -1,10 +1,9 @@
 #include "g_defs.h"
-#include "render.h"
 #include "update.h"
 #include "utils/logger.h"
-#include <SDL.h>
+#include "g_sdl.h"
 
-static global *g;
+global *g;
 
 void *module_main(void *saved_state) {
   logger_init(DEBUG, NULL);
@@ -12,31 +11,34 @@ void *module_main(void *saved_state) {
   // load or create global
   g = saved_state;
   if (g == NULL) {
-    LOG("INITIALIZING WENGINE ...");
+    LOG("INITIALIZING WENGINE ...\n");
     g = calloc(1, sizeof(*g));
-    init_sdl(g);
+    if (sdl_init(g) != 0)
+      return NULL;
+    if (vk_init(g) != 0)
+        return NULL;
   } else {
-    LOG("LOADING GLOBAL ...");
-    LOG("GLOBAL LOADED");
+    LOG("LOADING GLOBAL ...\n");
+    LOG("GLOBAL LOADED\n");
   }
 
   // set defaults
   set_global_defaults(g);
 
   // gameloop
-  while (!g->quit) {
+  while (!g->game.quit) {
+
     handle_event(g);
 
-    render(g);
   }
 
-  // reload / quit
-  if (g->reload) {
-    LOG("WENGINE RELOADING ...");
+  // game.reload / game.quit
+  if (g->game.reload) {
+    LOG("WENGINE RELOADING ...\n");
     return g;
   } else {
-    LOG("WENGINGE CLOSING ...");
-    deinit_sdl(g);
+    LOG("WENGINGE CLOSING ...\n");
+    sdl_quit(g);
     return NULL;
   }
 }
