@@ -25,7 +25,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL2)
 # compile SDL_image
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL_image)
 # compile GLEW
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/GLEW/build/cmake)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/GLEW/build/cmake)
 
 find_package(OpenGL REQUIRED)
 
